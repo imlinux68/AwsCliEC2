@@ -65,7 +65,7 @@ aws ec2 start-instances --instance-ids $startids
 
 function destroyEC2(){
 read -p "enter instance ids to destroy: " destroyids
-aws ec2 terminate-instances --instance-ids $startids
+aws ec2 terminate-instances --instance-ids $destroyids
 }
 
 
