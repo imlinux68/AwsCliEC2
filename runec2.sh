@@ -477,8 +477,9 @@ for stop in "${stops[@]}"
 }
 
 function destroyEC2(){
+descec2
 read -p "Enter instance ids to destroy: " destroyids
-aws ec2 terminate-instances --instance-ids $startids
+aws ec2 terminate-instances --instance-ids $destroyids
 }
 
 function ec2menu() {
