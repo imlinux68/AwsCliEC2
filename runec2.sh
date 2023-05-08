@@ -453,6 +453,28 @@ read -p "Enter instance ids to start: " startids
 aws ec2 start-instances --instance-ids $startids
 }
 
+function startAllInstances() {
+allinst=$(aws ec2 describe-instances --filters  "Name=instance-state-name,Values=stopped" --query "Reservations[].Instances[].[InstanceId]" --output text | tr '\n' ',')
+echo "Starting $allinst"
+IFS=',' read -ra starts <<< "$allinst"
+for start in "${starts[@]}" 
+	do
+		aws ec2 start-instances --instance-ids $start
+		echo "Instance $start started"
+	done
+}
+
+
+function stopAllInstances() {
+allinst=$(aws ec2 describe-instances --filters  "Name=instance-state-name,Values=running" --query "Reservations[].Instances[].[InstanceId]" --output text | tr '\n' ',')
+echo "Stoping $allinst"
+IFS=',' read -ra stops <<< "$allinst"
+for stop in "${stops[@]}" 
+	do
+		aws ec2 stop-instances --instance-ids $stop
+		echo "Instance $stop stopped"
+	done
+}
 
 function destroyEC2(){
 read -p "Enter instance ids to destroy: " destroyids
@@ -473,7 +495,9 @@ while :
 			 echo "3. Describe EC2"
 			 echo "4. Start EC2"
 			 echo "5. Stop EC2"
-			 echo "6. Quit"
+			 echo "6. Start all instances"
+			 echo "7. Stop All instances"
+			 echo "8. Quit"
 
 		read -p "take your choice: " choice
 		case $choice in
@@ -483,8 +507,10 @@ while :
 			3) describeEC2 ;;
 			4) startEC2 ;;
 			5) stopEC2 ;;
-			6) break ;;
-			*) echo "nums from 1 to 6 ONLY" ; sleep 3 ;;
+			6) startAllInstances ;;
+			7) stopAllInstances ;;
+			8) break ;;
+			*) echo "nums from 1 to 8 ONLY" ; sleep 3 ;;
 		esac
 	done
 }
