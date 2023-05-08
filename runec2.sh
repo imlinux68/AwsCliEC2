@@ -393,7 +393,7 @@ while :
 			15) createEIP ;;
 			16) attachEllasticIp ;;
 			17) break ;;
-			*) echo "nums from 1 to 15 ONLY" ; sleep 3 ;;
+			*) echo "nums from 1 to 17 ONLY" ; sleep 3 ;;
 		esac
 	done
 }
