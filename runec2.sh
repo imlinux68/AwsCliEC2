@@ -64,7 +64,7 @@ while :
 	do
 		echo -e "\n\n\n***************************"
 		echo          "***************************"
-		echo          "MAKE YOUR CHOISE RIGHT NOW!"
+		echo          "***KEY PAIR FOR SSH MENU***"
 		echo          "***************************"
 		echo          "***************************"
 
@@ -124,7 +124,7 @@ while :
 	do
 		echo -e "\n\n\n***************************"
 		echo          "***************************"
-		echo          "MAKE YOUR CHOISE RIGHT NOW!"
+		echo          "*********VPC  MENU*********"
 		echo          "***************************"
 		echo          "***************************"
 
@@ -190,7 +190,7 @@ while :
 	do
 		echo -e "\n\n\n***************************"
 		echo          "***************************"
-		echo          "MAKE YOUR CHOISE RIGHT NOW!"
+		echo          "******SUBNETTING MENU******"
 		echo          "***************************"
 		echo          "***************************"
 
@@ -351,7 +351,7 @@ while :
 	do
 		echo -e "\n\n\n***************************"
 		echo          "***************************"
-		echo          "MAKE YOUR CHOISE RIGHT NOW!"
+		echo          "****SECURITY GROUP MENU****"
 		echo          "***************************"
 		echo          "***************************"
 
@@ -489,7 +489,7 @@ while :
 	do
 		echo -e "\n\n\n***************************"
 		echo          "***************************"
-		echo          "MAKE YOUR CHOISE RIGHT NOW!"
+		echo          "*********EC2  MENU*********"
 		echo          "***************************"
 		echo          "***************************"
 
