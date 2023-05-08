@@ -96,13 +96,6 @@ read -p "Enter a cidrBlock for your VPC in format 0.0.0.0/sn : " vpcCidr
 	aws ec2 create-vpc --cidr-block $vpcCidr $vpcTagName
 }
 
-function describeVpc(){
-	#aws ec2 describe-vpcs | grep "\"VpcId\""
-	aws ec2 --output table --query 'Vpcs[*].{VpcId:VpcId,Name:Tags[?Key==`Name`].Value|[0],CidrBlock:CidrBlock}' describe-vpcs
-	read -p "Enter a vpc id to describe: " vpcIdDescribe
-	aws ec2 describe-vpcs --vpc-ids $vpcIdDescribe
-}
-
 
 function displayVpcs(){
 echo "Here are your VPCs: "
@@ -111,9 +104,17 @@ echo "Here are your VPCs: "
 }
 
 
+function describeVpc(){
+	#aws ec2 describe-vpcs | grep "\"VpcId\""
+	displayVpcs
+	read -p "Enter a vpc id to describe: " vpcIdDescribe
+	aws ec2 describe-vpcs --vpc-ids $vpcIdDescribe
+}
+
+
 function destroyVpc(){
 	#aws ec2 describe-vpcs | grep "\"VpcId\""
-	aws ec2 --output table --query 'Vpcs[*].{VpcId:VpcId,Name:Tags[?Key==`Name`].Value|[0],CidrBlock:CidrBlock}' describe-vpcs
+	displayVpcs
 	read -p "Enter a vpc id to delete: " vpcIdDel
 	aws ec2 delete-vpc --vpc-id $vpcIdDel
 }
@@ -159,7 +160,8 @@ echo "Here are your Subnets: "
 
 function createSub(){
 read -p "Enter a name for your Subnet: " subName
-aws ec2 --output table --query 'Vpcs[*].{VpcId:VpcId,Name:Tags[?Key==`Name`].Value|[0],CidrBlock:CidrBlock}' describe-vpcs
+aws ec2 --output table --query 'Vpcs[*].{VpcId:VpcId,Name:Tags[?Key==`Name`].Value|[0],CidrBlock:CidrBlock}' 
+describe-vpcs
 read -p "Enter a VPC ID for your subnet: " subVpcid
 read -p "Enter a cidrBlock for your subnet in format 0.0.0.0/sn : " subCidr
 	subnetVpcId=$(echo "--vpc-id $subVpcid")
