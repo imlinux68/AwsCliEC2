@@ -302,7 +302,7 @@ aws ec2 describe-route-tables --query 'RouteTables[*].{RTID:RouteTableId,VPC:Vpc
 function createRT(){
 read -p "Enter a vpc id to create A route table for it: " vpcRT
 aws ec2 create-route-table --vpc-id $vpcRT
-read -p "Connect to internet? y/n" ans
+read -p "Connect to internet? y/n: " ans
 if [[ $ans == "y" ]]
 	then
 		describeRT
@@ -394,6 +394,7 @@ while :
 			*) echo "nums from 1 to 15 ONLY" ; sleep 3 ;;
 		esac
 	done
+#https://serverfault.com/a/876370
 }
 
 
@@ -401,6 +402,7 @@ while :
 
 #### START OF EC2 SECTION ####################
 function launchEC2() {
+	describesKeys
 	read -p "Enter a key name: " keyName
 		read -p "Enter an instance name: " iName
 		displaySGs
@@ -416,8 +418,12 @@ function launchEC2() {
 			fi
 }
 
-function describeEC2(){
+function descec2() {
 aws ec2 describe-instances --query "Reservations[*].Instances[*].{PublicIP:PublicIpAddress,Type:InstanceType,Name:Tags[?Key=='Name']|[0].Value,Status:State.Name,InstanceID:InstanceId}"  --filters "Name=instance-state-name,Values=*" "Name=instance-type,Values='*micro*'" --output table
+}
+
+function describeEC2(){
+	descec2
 	echo -ne "\t${White}All instances num:${Off} "
 	aws ec2 describe-instances --query 'Reservations[*].Instances[*].[InstanceId]' --output text | wc -l 
 	echo -ne "\t${Green}Running instances:${Off} "
@@ -485,6 +491,79 @@ while :
 ######## END OF EC2 SECTION   ####################
 
 
+############ START EBS SECTION ################
+
+function describeEbs(){
+echo "Here are your EBS volumes: "
+aws ec2 describe-volumes --query "Volumes[*].{VolumeID:VolumeId,SizeVolume:Size,AZ:AvailabilityZone,Type:VolumeType,Status:State,InstancesId:Attachments[0].InstanceId,DeviceName:Attachments[0].Device}" --output table
+}
+
+
+function createEbs() {
+read -p "Enter size in GB to create your EBS storage: " ebs_size
+echo "Creating ebs storage, please wait...."
+volume_id=$(aws ec2 create-volume --size $ebs_size --availability-zone us-west-2a --volume-type gp2 --query 'VolumeId' --output text)
+aws ec2 wait volume-available --volume-ids $volume_id
+echo "Volume created successfully and available to attach!!!"
+
+}
+
+function attachEbs() {
+describeEbs
+read -p "Enter an EBS volume to attach: " vol_id
+descec2
+read -p "Enter an instance id to attach to it ebs volume: " myInstanceId
+aws ec2 attach-volume --volume-id $vol_id --instance-id $myInstanceId --device /dev/sdf
+}
+
+function detachEbs() {
+describeEbs
+read -p "Enter an EBS iD to Dettach: " vol_id
+descec2
+read -p "Enter an instance id to dettach from it ebs volume: " myInstanceId
+aws ec2 detach-volume --volume-id $vol_id --instance-id $myInstanceId
+echo "Volume was dettached successfully!"
+}
+
+function destroyEbs() {
+describeEbs
+read -p "Enter an EBS iD to Destroy it: " vol_id
+aws ec2 delete-volume --volume-id $vol_id
+echo "Volume was successfully deleted!"
+}
+
+function ebsmenu() {
+while :
+	do
+		echo -e "\n\n\n***************************"
+		echo          "***************************"
+		echo          "******EBS MENU CHOICE******"
+		echo          "***************************"
+		echo          "***************************"
+
+			 echo "1. Create EBS"
+			 echo "2. Attach EBS"
+			 echo "3. Describe EBS"
+			 echo "4. Dettach EBS"
+			 echo "5. Destroy EBS"
+			 echo "6. Quit"
+
+		read -p "take your choice: " choice
+		case $choice in
+ 
+			1) createEbs ;;
+			2) attachEbs ;;
+			3) describeEbs ;;
+			4) detachEbs ;;
+			5) destroyEbs ;;
+			6) break ;;
+			*) echo "nums from 1 to 6 ONLY" ; sleep 3 ;;
+		esac
+	done
+}
+######## END OF EBS SECTION   ####################
+
+
 ############ START MAIN SECTION ################
 
 function main() {
@@ -501,7 +580,8 @@ while :
 			 echo "3. VPC menu"
 			 echo "4. Subnetting Menu"
 			 echo "5. Security Group Menu"
-			 echo "6. Quit"
+			 echo "6. EBS MENU"
+			 echo "7. Quit"
 
 		read -p "take your choice: " choice
 		case $choice in
@@ -511,8 +591,9 @@ while :
 			3) VPCMenu ;;
 			4) subMenu ;;
 			5) secGroupMenu ;;
-			6) break ;;
-			*) echo "nums from 1 to 6 ONLY" ; sleep 3 ;;
+			6) ebsmenu ;;
+			7) break ;;
+			*) echo "nums from 1 to 7 ONLY" ; sleep 3 ;;
 		esac
 	done
 }
