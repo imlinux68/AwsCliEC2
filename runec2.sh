@@ -27,7 +27,7 @@ aws ec2 describe-key-pairs --query 'KeyPairs[*].{KeyName:KeyName,Fingerprint:Fin
 }
 
 function describeKey(){
-	aws ec2 describe-key-pairs --query 'KeyPairs[*].{KeyName:KeyName,Fingerprint:Fingerprint,KeyMaterial:KeyMaterial,KeyPairId:KeyPairId}' --output table
+	describesKeys
 	read -p "Enter a specific key name: " keyNameDescribe
 		aws ec2 describe-key-pairs --key-name $keyNameDescribe
 }
@@ -52,7 +52,7 @@ function createKeyPair(){
 }
 
 function deleteKeyPair(){
-	aws ec2 describe-key-pairs --query 'KeyPairs[*].{KeyName:KeyName,Fingerprint:KeyFingerprint,KeyMaterial:KeyMaterial,KeyPairId:KeyPairId}' --output table
+	describesKeys
 	read -p "Enter a specific key name to delete: " keyNameDelete
 		aws ec2 delete-key-pair --key-name $keyNameDelete
 		echo "Key was successfully deleted!"
@@ -396,7 +396,6 @@ while :
 			*) echo "nums from 1 to 15 ONLY" ; sleep 3 ;;
 		esac
 	done
-#https://serverfault.com/a/876370
 }
 
 
